@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Savings Tracker</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #2d3748;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px 10px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 16px;
+            color: #718096;
+        }
+
+        /* Main Content Grid */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        /* Card Component */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .card h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1a202c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a5568;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        input[type="number"], input[type="text"], input[type="date"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s ease;
+            background: white;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #4a5568;
+            box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.1);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: #2d3748;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #1a202c;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            background-color: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+            width: 100%;
+        }
+
+        .btn-secondary:hover {
+            background: #f7fafc;
+            border-color: #cbd5e0;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+            min-height: 36px;
+            width: auto;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 16px;
+            background: #f7fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #718096;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1a202c;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 24px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #2d3748;
+            border-radius: 6px;
+            transition: width 0.6s ease;
+            width: 0%;
+        }
+
+        /* Success Message */
+        .success-message {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .success-message p {
+            color: #22543d;
+            font-weight: 600;
+        }
+
+        /* Chat Assistant */
+        .chat-assistant {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            height: fit-content;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .coach-avatar {
+            width: 36px;
+            height: 36px;
+            background: #2d3748;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+        }
+
+        .coach-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a202c;
+            margin: 0;
+        }
+
+        .coach-info p {
+            font-size: 12px;
+            color: #718096;
+            margin: 0;
+        }
+
+        .chat-messages {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 16px;
+        }
+
+        .message {
+            background: #f7fafc;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 3px solid #2d3748;
+            animation: messageSlide 0.3s ease-out;
+        }
+
+        .message.progress-update {
+            background: #e6fffa;
+            border-left-color: #38b2ac;
+        }
+
+        .message.milestone {
+            background: #fff5f5;
+            border-left-color: #e53e3e;
+        }
+
+        .message.achievement {
+            background: #fffaf0;
+            border-left-color: #ed8936;
+        }
+
+        @keyframes messageSlide {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .message-text {
+            font-size: 14px;
+            color: #2d3748;
+            line-height: 1.4;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #a0aec0;
+            margin-top: 4px;
+        }
+
+        /* Progress Chart in Chat */
+        .progress-chart {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #e2e8f0;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .chart-bar {
+            height: 20px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chart-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2d3748, #4a5568);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .chart-percentage {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 11px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .chart-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+            font-size: 11px;
+        }
+
+        .chart-stat {
+            text-align: center;
+            padding: 4px;
+            background: white;
+            border-radius: 4px;
+        }
+
+        /* Smart Suggestions */
+        .smart-suggestion {
+            background: #fffaf0;
+            border: 1px solid #fbd38d;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .smart-suggestion h4 {
+            color: #744210;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .smart-suggestion p {
+            color: #975a16;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        /* Auto-Save Planner */
+        .planner {
+            background: #f0f4f8;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .planner h4 {
+            color: #2d3748;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .weekly-plan {
+            display: grid;
+            gap: 8px;
+        }
+
+        .week-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .week-status {
+            font-size: 16px;
+        }
+
+        /* Streak Counter */
+        .streak-counter {
+            text-align: center;
+            padding: 16px;
+            background: #fff5f5;
+            border: 1px solid #fed7d7;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .streak-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #c53030;
+        }
+
+        .streak-text {
+            font-size: 12px;
+            color: #742a2a;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        /* Coin Animation */
+        .coin-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .coin {
+            position: absolute;
+            font-size: 24px;
+            animation: coinDrop 1s ease-out forwards;
+        }
+
+        @keyframes coinDrop {
+            0% {
+                transform: translate(-50%, -50%) scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2) rotate(180deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, 100px) scale(1) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Voice Input */
+        .voice-input {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .voice-btn {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .voice-btn:hover {
+            background: #edf2f7;
+        }
+
+        .voice-btn.listening {
+            background: #fed7d7;
+            border-color: #fc8181;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Daily Tip */
+        .daily-tip {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .daily-tip h4 {
+            color: #234e52;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .daily-tip p {
+            color: #285e61;
+            font-size: 12px;
+        }
+
+        /* Privacy Mode */
+        .privacy-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .privacy-toggle input[type="checkbox"] {
+            width: auto;
+        }
+
+        .privacy-toggle label {
+            font-size: 12px;
+            color: #718096;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .blurred {
+            filter: blur(4px);
+            transition: filter 0.3s ease;
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                padding: 16px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chat-assistant {
+                order: -1;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e2e8f0;
+            border-top: 2px solid #2d3748;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <h1><i class="fas fa-piggy-bank"></i> Smart Savings Tracker</h1>
+            <p>Your AI-powered financial companion</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Main Tracker -->
+            <div class="tracker-section">
+                <!-- Set Goal Section -->
+                <section id="goal-section" class="card">
+                    <h2><i class="fas fa-bullseye"></i> Set Your Savings Goal</h2>
+                    <div class="form-group">
+                        <label for="goal-name"><i class="fas fa-tag"></i> Goal Name</label>
+                        <input type="text" id="goal-name" placeholder="e.g., New Laptop, Emergency Fund">
+                    </div>
+                    <div class="form-group">
+                        <label for="goal-input"><i class="fas fa-dollar-sign"></i> Target Amount (RWF)</label>
+                        <input type="number" id="goal-input" placeholder="e.g., 100000" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="goal-deadline"><i class="fas fa-calendar-alt"></i> Target Date (Optional)</label>
+                        <input type="date" id="goal-deadline">
+                    </div>
+                    <button id="set-goal-btn" class="btn btn-primary">
+                        <i class="fas fa-rocket"></i> Set Goal
+                    </button>
+                </section>
+
+                <!-- Add Deposit Section -->
+                <section id="deposit-section" class="card hidden">
+                    <h2><i class="fas fa-coins"></i> Add Your Savings</h2>
+                    <div class="form-group">
+                        <label for="deposit-input"><i class="fas fa-plus-circle"></i> Amount to add (RWF)</label>
+                        <input type="number" id="deposit-input" placeholder="e.g., 5000" min="1">
+                        <div class="voice-input">
+                            <button id="voice-btn" class="voice-btn" title="Voice Input">
+                                <i class="fas fa-microphone"></i> Voice
+                            </button>
+                            <span id="voice-status" style="font-size: 12px; color: #718096;"></span>
+                        </div>
+                    </div>
+                    <button id="add-deposit-btn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        <span class="btn-text">Add Amount</span>
+                        <span class="loading hidden"></span>
+                    </button>
+                </section>
+
+                <!-- Progress & Summary Section -->
+                <section id="progress-section" class="card hidden">
+                    <div class="privacy-toggle">
+                        <input type="checkbox" id="privacy-mode">
+                        <label for="privacy-mode"><i class="fas fa-lock"></i> Privacy Mode</label>
+                    </div>
+                    
+                    <h2><i class="fas fa-chart-line"></i> Your Progress</h2>
+                    
+                    <!-- Summary Stats -->
+                    <div class="stats-grid" id="stats-container">
+                        <div class="stat-item">
+                            <div class="stat-label"><i class="fas fa-wallet"></i> Total Saved</div>
+                            <div id="total-saved" class="stat-value">0 RWF</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label"><i class="fas fa-target"></i> Goal Amount</div>
+                            <div id="goal-amount" class="stat-value">0 RWF</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label"><i class="fas fa-hourglass-half"></i> Remaining</div>
+                            <div id="remaining-amount" class="stat-value">0 RWF</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label"><i class="fas fa-calendar-day"></i> Days Left</div>
+                            <div id="days-left" class="stat-value">--</div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="progress-container">
+                        <div class="progress-header">
+                            <span><i class="fas fa-chart-bar"></i> Progress</span>
+                            <span id="progress-percentage">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="progress-fill" class="progress-fill"></div>
+                        </div>
+                    </div>
+
+                    <!-- Auto-Save Planner -->
+                    <div id="auto-planner" class="planner hidden">
+                        <h4><i class="fas fa-calendar-check"></i> Auto-Save Plan</h4>
+                        <p id="planner-suggestion"></p>
+                        <div id="weekly-plan" class="weekly-plan"></div>
+                    </div>
+
+                    <!-- Goal Reached Message -->
+                    <div id="success-message" class="success-message hidden">
+                        <p><i class="fas fa-trophy"></i> Congratulations! You've reached your savings goal!</p>
+                    </div>
+
+                    <!-- Smart Suggestion -->
+                    <div id="smart-suggestion" class="smart-suggestion hidden">
+                        <h4><i class="fas fa-lightbulb"></i> Smart Suggestion</h4>
+                        <p id="suggestion-text"></p>
+                        <button id="accept-suggestion" class="btn btn-small btn-secondary">
+                            <i class="fas fa-check"></i> Set as Next Goal
+                        </button>
+                    </div>
+
+                    <!-- Reset Button -->
+                    <button id="reset-btn" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reset & Start Over
+                    </button>
+                </section>
+            </div>
+
+            <!-- Assistant Sidebar -->
+            <div class="assistant-sidebar">
+                <!-- Streak Counter -->
+                <div id="streak-counter" class="streak-counter hidden">
+                    <div class="streak-number" id="streak-number">0</div>
+                    <div class="streak-text"><i class="fas fa-fire"></i> Day Streak</div>
+                </div>
+
+                <!-- Daily Tip -->
+                <div class="daily-tip">
+                    <h4><i class="fas fa-lightbulb"></i> Daily Tip</h4>
+                    <p id="daily-tip-text">Loading tip...</p>
+                </div>
+
+                <!-- Chat Assistant -->
+                <div class="chat-assistant">
+                    <div class="chat-header">
+                        <div class="coach-avatar"><i class="fas fa-robot"></i></div>
+                        <div class="coach-info">
+                            <h3>Savings Coach</h3>
+                            <p>Your financial buddy</p>
+                        </div>
+                    </div>
+
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="message">
+                            <div class="message-text">
+                                <i class="fas fa-hand-wave"></i> Hi! I'm your savings coach. Set a goal and let's build your financial future together!
+                            </div>
+                            <div class="message-time" id="initial-time"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weekly Report -->
+                <div id="weekly-report" class="card hidden">
+                    <h3 style="font-size: 16px; margin-bottom: 12px;"><i class="fas fa-chart-pie"></i> This Week</h3>
+                    <div id="weekly-stats"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coin Animation Container -->
+    <div class="coin-container" id="coin-container"></div>
+
+    <script>
+        // Global variables
+        let savingsGoal = 0;
+        let currentSavings = 0;
+        let goalName = '';
+        let goalDeadline = null;
+        let depositCount = 0;
+        let startDate = null;
+        let lastDepositDate = null;
+        let weeklyDeposits = [];
+        let streakCount = 0;
+
+        // Smart suggestions data
+        const smartSuggestions = [
+            { name: "Emergency Fund", amount: 50000, description: "Build a safety net for unexpected expenses" },
+            { name: "New Phone", amount: 80000, description: "Upgrade to a better smartphone" },
+            { name: "Laptop", amount: 200000, description: "Invest in a good laptop for work/study" },
+            { name: "Vacation Fund", amount: 150000, description: "Save for a memorable trip" },
+            { name: "Tablet", amount: 120000, description: "Get a tablet for entertainment and productivity" },
+            { name: "Course/Training", amount: 75000, description: "Invest in your skills and education" }
+        ];
+
+        // Daily tips
+        const dailyTips = [
+            "Bring your own lunch twice a week to save 8,000 RWF/month",
+            "Delay impulse purchases by 24 hours — it really helps!",
+            "Use the 50/30/20 rule: 50% needs, 30% wants, 20% savings",
+            "Track every expense for a week to see where your money goes",
+            "Set up automatic transfers to your savings account",
+            "Buy generic brands to save 10-20% on groceries",
+            "Cancel unused subscriptions and memberships",
+            "Use public transport or walk when possible",
+            "Cook at home more often instead of eating out",
+            "Compare prices before making any purchase over 10,000 RWF"
+        ];
+
+        // DOM elements
+        const goalSection = document.getElementById('goal-section');
+        const depositSection = document.getElementById('deposit-section');
+        const progressSection = document.getElementById('progress-section');
+
+        const goalNameInput = document.getElementById('goal-name');
+        const goalInput = document.getElementById('goal-input');
+        const goalDeadlineInput = document.getElementById('goal-deadline');
+        const depositInput = document.getElementById('deposit-input');
+
+        const setGoalBtn = document.getElementById('set-goal-btn');
+        const addDepositBtn = document.getElementById('add-deposit-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const voiceBtn = document.getElementById('voice-btn');
+
+        const totalSavedElement = document.getElementById('total-saved');
+        const goalAmountElement = document.getElementById('goal-amount');
+        const remainingAmountElement = document.getElementById('remaining-amount');
+        const daysLeftElement = document.getElementById('days-left');
+        const progressPercentageElement = document.getElementById('progress-percentage');
+        const progressFillElement = document.getElementById('progress-fill');
+        const successMessage = document.getElementById('success-message');
+
+        const chatMessages = document.getElementById('chat-messages');
+        const streakCounter = document.getElementById('streak-counter');
+        const streakNumber = document.getElementById('streak-number');
+        const dailyTipText = document.getElementById('daily-tip-text');
+        const smartSuggestion = document.getElementById('smart-suggestion');
+        const autoPlanner = document.getElementById('auto-planner');
+        const privacyMode = document.getElementById('privacy-mode');
+        const statsContainer = document.getElementById('stats-container');
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDataFromStorage();
+            updateUI();
+            setupEventListeners();
+            updateInitialTime();
+            showDailyTip();
+            setupVoiceInput();
+            updateWeeklyReport();
+        });
+
+        function updateInitialTime() {
+            document.getElementById('initial-time').textContent = new Date().toLocaleTimeString();
+        }
+
+        // Event listeners
+        function setupEventListeners() {
+            setGoalBtn.addEventListener('click', handleSetGoal);
+            addDepositBtn.addEventListener('click', handleAddDeposit);
+            resetBtn.addEventListener('click', handleReset);
+            
+            goalInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') handleSetGoal();
+            });
+            
+            goalNameInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') handleSetGoal();
+            });
+            
+            depositInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') handleAddDeposit();
+            });
+            
+            goalInput.addEventListener('input', validateGoalInput);
+            goalNameInput.addEventListener('input', validateGoalInput);
+            depositInput.addEventListener('input', validateDepositInput);
+            goalDeadlineInput.addEventListener('change', updateAutoPlanner);
+
+            privacyMode.addEventListener('change', togglePrivacyMode);
+
+            document.getElementById('accept-suggestion').addEventListener('click', acceptSmartSuggestion);
+        }
+
+        // Handle setting the savings goal
+        function handleSetGoal() {
+            const goalValue = parseFloat(goalInput.value);
+            const name = goalNameInput.value.trim();
+            const deadline = goalDeadlineInput.value;
+            
+            if (isValidAmount(goalValue) && name) {
+                savingsGoal = goalValue;
+                goalName = name;
+                goalDeadline = deadline || null;
+                startDate = new Date().toISOString();
+                goalInput.value = '';
+                goalNameInput.value = '';
+                goalDeadlineInput.value = '';
+                saveDataToStorage();
+                updateUI();
+                updateAutoPlanner();
+                
+                addChatMessage(`<i class="fas fa-bullseye"></i> Perfect! Let's save ${formatCurrency(goalValue)} for your "${goalName}"! ${deadline ? `Target date: ${new Date(deadline).toLocaleDateString()}` : 'No deadline set.'} I'm here to help you succeed! <i class="fas fa-muscle"></i>`, 'normal');
+                addProgressChart();
+                showNotification('Goal set successfully!', 'success');
+            } else {
+                showError('Please enter both a goal name and valid amount');
+            }
+        }
+
+        // Handle adding a deposit
+        function handleAddDeposit() {
+            const depositValue = parseFloat(depositInput.value);
+            
+            if (isValidAmount(depositValue)) {
+                showButtonLoading(true);
+                
+                setTimeout(() => {
+                    currentSavings += depositValue;
+                    depositCount++;
+                    lastDepositDate = new Date().toISOString();
+                    
+                    // Update weekly deposits
+                    const today = new Date();
+                    const weekStart = new Date(today.setDate(today.getDate() - today.getDay()));
+                    weeklyDeposits.push({
+                        amount: depositValue,
+                        date: new Date().toISOString(),
+                        week: weekStart.toISOString()
+                    });
+                    
+                    updateStreak();
+                    depositInput.value = '';
+                    saveDataToStorage();
+                    updateUI();
+                    
+                    const percentage = Math.min(100, (currentSavings / savingsGoal) * 100);
+                    
+                    // Show coin animation
+                    showCoinAnimation();
+                    
+                    // Generate coach message
+                    generateCoachMessage(percentage, depositValue);
+                    
+                    // Add progress update to chat
+                    addProgressUpdate(depositValue, percentage);
+                    
+                    // Check for smart suggestions
+                    if (percentage >= 100) {
+                        setTimeout(() => showSmartSuggestion(), 2000);
+                    }
+                    
+                    updateAutoPlanner();
+                    updateWeeklyReport();
+                    showNotification(`Added ${formatCurrency(depositValue)}!`, 'success');
+                    showButtonLoading(false);
+                }, 800);
+            } else {
+                showError('Please enter a valid deposit amount');
+            }
+        }
+
+        // Add progress chart to chat
+        function addProgressChart() {
+            const percentage = savingsGoal > 0 ? Math.min(100, (currentSavings / savingsGoal) * 100) : 0;
+            const remaining = Math.max(0, savingsGoal - currentSavings);
+            
+            const chartMessage = document.createElement('div');
+            chartMessage.className = 'message progress-update';
+            chartMessage.innerHTML = `
+                <div class="message-text">
+                    <i class="fas fa-chart-line"></i> <strong>Progress Overview</strong>
+                    <div class="progress-chart">
+                        <div class="chart-header">
+                            <span><i class="fas fa-target"></i> ${goalName}</span>
+                            <span><i class="fas fa-calendar"></i> ${goalDeadline ? new Date(goalDeadline).toLocaleDateString() : 'No deadline'}</span>
+                        </div>
+                        <div class="chart-bar">
+                            <div class="chart-fill" style="width: ${percentage}%">
+                                <div class="chart-percentage">${percentage.toFixed(1)}%</div>
+                            </div>
+                        </div>
+                        <div class="chart-stats">
+                            <div class="chart-stat">
+                                <i class="fas fa-coins"></i> Saved: ${formatCurrency(currentSavings)}
+                            </div>
+                            <div class="chart-stat">
+                                <i class="fas fa-hourglass-half"></i> Left: ${formatCurrency(remaining)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="message-time">${new Date().toLocaleTimeString()}</div>
+            `;
+            
+            chatMessages.appendChild(chartMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Add progress update to chat
+        function addProgressUpdate(depositValue, percentage) {
+            const remaining = Math.max(0, savingsGoal - currentSavings);
+            
+            const updateMessage = document.createElement('div');
+            updateMessage.className = 'message progress-update';
+            updateMessage.innerHTML = `
+                <div class="message-text">
+                    <i class="fas fa-plus-circle"></i> <strong>Deposit Added!</strong>
+                    <div class="progress-chart">
+                        <div class="chart-header">
+                            <span><i class="fas fa-coins"></i> +${formatCurrency(depositValue)}</span>
+                            <span><i class="fas fa-chart-line"></i> ${percentage.toFixed(1)}% Complete</span>
+                        </div>
+                        <div class="chart-bar">
+                            <div class="chart-fill" style="width: ${percentage}%">
+                                <div class="chart-percentage">${percentage.toFixed(1)}%</div>
+                            </div>
+                        </div>
+                        <div class="chart-stats">
+                            <div class="chart-stat">
+                                <i class="fas fa-wallet"></i> Total: ${formatCurrency(currentSavings)}
+                            </div>
+                            <div class="chart-stat">
+                                <i class="fas fa-target"></i> Remaining: ${formatCurrency(remaining)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="message-time">${new Date().toLocaleTimeString()}</div>
+            `;
+            
+            chatMessages.appendChild(updateMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Generate coach messages
+        function generateCoachMessage(percentage, depositValue) {
+            let message = '';
+            let messageType = 'normal';
+            
+            if (percentage >= 100) {
+                message = `<i class="fas fa-trophy"></i> AMAZING! You've reached 100% of your goal! You saved ${formatCurrency(currentSavings)} for your "${goalName}"! Time to celebrate! <i class="fas fa-party-horn"></i>`;
+                messageType = 'achievement';
+            } else if (percentage >= 75) {
+                message = `<i class="fas fa-fire"></i> You're crushing it! ${percentage.toFixed(1)}% complete! Only ${formatCurrency(savingsGoal - currentSavings)} left! <i class="fas fa-rocket"></i>`;
+                messageType = 'milestone';
+            } else if (percentage >= 50) {
+                message = `<i class="fas fa-medal"></i> Halfway milestone achieved! ${percentage.toFixed(1)}% done! Your consistency is paying off! <i class="fas fa-star"></i>`;
+                messageType = 'milestone';
+            } else if (percentage >= 25) {
+                message = `<i class="fas fa-chart-line"></i> Great momentum! You're at ${percentage.toFixed(1)}%! Every deposit counts! <i class="fas fa-trending-up"></i>`;
+            } else if (depositCount === 1) {
+                message = `<i class="fas fa-play"></i> First deposit complete! Welcome to your savings journey for "${goalName}"! <i class="fas fa-confetti"></i>`;
+                messageType = 'milestone';
+            } else {
+                message = `<i class="fas fa-plus"></i> Excellent! +${formatCurrency(depositValue)} added! You're now at ${percentage.toFixed(1)}%! Keep going! <i class="fas fa-thumbs-up"></i>`;
+            }
+            
+            addChatMessage(message, messageType);
+        }
+
+        // Smart suggestions
+        function showSmartSuggestion() {
+            const avgDeposit = currentSavings / depositCount;
+            const timeToSave = Math.ceil(savingsGoal / avgDeposit);
+            
+            const suitableSuggestions = smartSuggestions.filter(s => 
+                s.amount >= avgDeposit * 5 && s.amount <= avgDeposit * 50
+            );
+            
+            if (suitableSuggestions.length > 0) {
+                const suggestion = suitableSuggestions[Math.floor(Math.random() * suitableSuggestions.length)];
+                const estimatedTime = Math.ceil(suggestion.amount / avgDeposit);
+                
+                document.getElementById('suggestion-text').textContent = 
+                    `Based on your saving pattern, you could save for "${suggestion.name}" (${formatCurrency(suggestion.amount)}) in about ${estimatedTime} deposits. ${suggestion.description}`;
+                
+                smartSuggestion.classList.remove('hidden');
+                smartSuggestion.dataset.suggestion = JSON.stringify(suggestion);
+                
+                addChatMessage(`<i class="fas fa-lightbulb"></i> <strong>Smart Suggestion:</strong> Based on your amazing saving pattern, you could tackle "${suggestion.name}" next! It would take about ${estimatedTime} deposits at your current pace. What do you think?`, 'achievement');
+            }
+        }
+
+        function acceptSmartSuggestion() {
+            const suggestion = JSON.parse(smartSuggestion.dataset.suggestion);
+            
+            savingsGoal = suggestion.amount;
+            goalName = suggestion.name;
+            currentSavings = 0;
+            depositCount = 0;
+            startDate = new Date().toISOString();
+            goalDeadline = null;
+            
+            smartSuggestion.classList.add('hidden');
+            saveDataToStorage();
+            updateUI();
+            updateAutoPlanner();
+            
+            addChatMessage(`<i class="fas fa-bullseye"></i> Excellent choice! Let's start saving for your "${suggestion.name}"! Target: ${formatCurrency(suggestion.amount)}`, 'milestone');
+            addProgressChart();
+        }
+
+        // Auto-save planner
+        function updateAutoPlanner() {
+            if (!goalDeadline || savingsGoal === 0) {
+                autoPlanner.classList.add('hidden');
+                return;
+            }
+            
+            const deadline = new Date(goalDeadline);
+            const today = new Date();
+            const daysLeft = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24));
+            const remaining = savingsGoal - currentSavings;
+            
+            if (daysLeft > 0) {
+                const weeklyAmount = Math.ceil(remaining / (daysLeft / 7));
+                const dailyAmount = Math.ceil(remaining / daysLeft);
+                
+                document.getElementById('planner-suggestion').textContent = 
+                    `To reach your goal by ${deadline.toLocaleDateString()}, save ${formatCurrency(weeklyAmount)} per week or ${formatCurrency(dailyAmount)} per day.`;
+                
+                const weeklyPlan = document.getElementById('weekly-plan');
+                weeklyPlan.innerHTML = '';
+                
+                for (let i = 0; i < Math.min(4, Math.ceil(daysLeft / 7)); i++) {
+                    const weekDiv = document.createElement('div');
+                    weekDiv.className = 'week-item';
+                    
+                    const weekStart = new Date(today);
+                    weekStart.setDate(today.getDate() + (i * 7));
+                    
+                    const hasDeposit = weeklyDeposits.some(d => {
+                        const depositWeek = new Date(d.week);
+                        return depositWeek.getTime() === weekStart.getTime();
+                    });
+                    
+                    weekDiv.innerHTML = `
+                        <span><i class="fas fa-calendar-week"></i> Week ${i + 1}: ${weekStart.toLocaleDateString()}</span>
+                        <span class="week-status">${hasDeposit ? '✅' : '⏳'}</span>
+                    `;
+                    
+                    weeklyPlan.appendChild(weekDiv);
+                }
+                
+                autoPlanner.classList.remove('hidden');
+            }
+        }
+
+        // Streak tracking
+        function updateStreak() {
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            if (lastDepositDate) {
+                const lastDeposit = new Date(lastDepositDate);
+                const daysDiff = Math.floor((today - lastDeposit) / (1000 * 60 * 60 * 24));
+                
+                if (daysDiff === 0) {
+                    if (streakCount === 0) streakCount = 1;
+                } else if (daysDiff === 1) {
+                    streakCount++;
+                } else {
+                    streakCount = 1;
+                }
+            } else {
+                streakCount = 1;
+            }
+            
+            if (streakCount > 0) {
+                streakNumber.textContent = streakCount;
+                streakCounter.classList.remove('hidden');
+                
+                if (streakCount > 1) {
+                    addChatMessage(`<i class="fas fa-fire"></i> <strong>Streak Alert!</strong> You've saved money ${streakCount} days in a row! Keep the momentum going! <i class="fas fa-chart-line"></i>`, 'milestone');
+                }
+            }
+        }
+
+        // Voice input
+        function setupVoiceInput() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+                
+                voiceBtn.addEventListener('click', () => {
+                    recognition.start();
+                    voiceBtn.classList.add('listening');
+                    document.getElementById('voice-status').textContent = 'Listening...';
+                });
+                
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    const amount = extractAmountFromSpeech(transcript);
+                    
+                    if (amount) {
+                        depositInput.value = amount;
+                        validateDepositInput();
+                        document.getElementById('voice-status').textContent = `Heard: ${formatCurrency(amount)}`;
+                        addChatMessage(`<i class="fas fa-microphone"></i> Voice input detected: ${formatCurrency(amount)}. Ready to add!`, 'normal');
+                    } else {
+                        document.getElementById('voice-status').textContent = 'Could not understand amount';
+                    }
+                    
+                    voiceBtn.classList.remove('listening');
+                };
+                
+                recognition.onerror = () => {
+                    voiceBtn.classList.remove('listening');
+                    document.getElementById('voice-status').textContent = 'Voice input error';
+                };
+                
+                recognition.onend = () => {
+                    voiceBtn.classList.remove('listening');
+                };
+            } else {
+                voiceBtn.style.display = 'none';
+            }
+        }
+
+        function extractAmountFromSpeech(text) {
+            const numbers = text.match(/\d+/g);
+            if (numbers && numbers.length > 0) {
+                return parseInt(numbers[0]);
+            }
+            
+            const wordNumbers = {
+                'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
+                'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10,
+                'thousand': 1000, 'hundred': 100
+            };
+            
+            let amount = 0;
+            const words = text.toLowerCase().split(' ');
+            
+            for (let i = 0; i < words.length; i++) {
+                if (wordNumbers[words[i]]) {
+                    amount += wordNumbers[words[i]];
+                }
+            }
+            
+            return amount > 0 ? amount : null;
+        }
+
+        // Coin animation
+        function showCoinAnimation() {
+            const coin = document.createElement('div');
+            coin.className = 'coin';
+            coin.innerHTML = '<i class="fas fa-coins"></i>';
+            
+            document.getElementById('coin-container').appendChild(coin);
+            
+            setTimeout(() => {
+                coin.remove();
+            }, 1000);
+        }
+
+        // Daily tip
+        function showDailyTip() {
+            const today = new Date().toDateString();
+            const savedTipDate = localStorage.getItem('dailyTipDate');
+            
+            if (savedTipDate !== today) {
+                const randomTip = dailyTips[Math.floor(Math.random() * dailyTips.length)];
+                dailyTipText.textContent = randomTip;
+                localStorage.setItem('dailyTipDate', today);
+                localStorage.setItem('dailyTip', randomTip);
+            } else {
+                const savedTip = localStorage.getItem('dailyTip');
+                dailyTipText.textContent = savedTip || dailyTips[0];
+            }
+        }
+
+        // Privacy mode
+        function togglePrivacyMode() {
+            if (privacyMode.checked) {
+                statsContainer.classList.add('blurred');
+                addChatMessage(`<i class="fas fa-lock"></i> Privacy mode enabled. Your amounts are now hidden from view.`, 'normal');
+            } else {
+                statsContainer.classList.remove('blurred');
+                addChatMessage(`<i class="fas fa-unlock"></i> Privacy mode disabled. Your amounts are now visible.`, 'normal');
+            }
+        }
+
+        // Weekly report
+        function updateWeeklyReport() {
+            const today = new Date();
+            const weekStart = new Date(today.setDate(today.getDate() - today.getDay()));
+            
+            const thisWeekDeposits = weeklyDeposits.filter(d => {
+                const depositDate = new Date(d.date);
+                return depositDate >= weekStart;
+            });
+            
+            const weeklyTotal = thisWeekDeposits.reduce((sum, d) => sum + d.amount, 0);
+            const weeklyCount = thisWeekDeposits.length;
+            
+            if (weeklyCount > 0) {
+                const weeklyReport = document.getElementById('weekly-report');
+                const weeklyStats = document.getElementById('weekly-stats');
+                
+                weeklyStats.innerHTML = `
+                    <p style="font-size: 14px; margin-bottom: 8px;"><i class="fas fa-coins"></i> Total: ${formatCurrency(weeklyTotal)}</p>
+                    <p style="font-size: 14px; margin-bottom: 8px;"><i class="fas fa-chart-bar"></i> Deposits: ${weeklyCount}</p>
+                    <p style="font-size: 14px; color: #718096;"><i class="fas fa-calculator"></i> Average: ${formatCurrency(weeklyTotal / weeklyCount)}</p>
+                `;
+                
+                weeklyReport.classList.remove('hidden');
+            }
+        }
+
+        // Handle reset
+        function handleReset() {
+            if (confirm('Are you sure you want to reset all your progress? This cannot be undone.')) {
+                savingsGoal = 0;
+                currentSavings = 0;
+                goalName = '';
+                goalDeadline = null;
+                depositCount = 0;
+                startDate = null;
+                lastDepositDate = null;
+                weeklyDeposits = [];
+                streakCount = 0;
+                
+                goalInput.value = '';
+                goalNameInput.value = '';
+                goalDeadlineInput.value = '';
+                depositInput.value = '';
+                
+                clearStorage();
+                updateUI();
+                resetChat();
+                
+                streakCounter.classList.add('hidden');
+                smartSuggestion.classList.add('hidden');
+                autoPlanner.classList.add('hidden');
+                document.getElementById('weekly-report').classList.add('hidden');
+                
+                showNotification('Progress reset successfully!', 'success');
+            }
+        }
+
+        // Update UI
+        function updateUI() {
+            if (savingsGoal === 0) {
+                goalSection.classList.remove('hidden');
+                depositSection.classList.add('hidden');
+                progressSection.classList.add('hidden');
+            } else {
+                goalSection.classList.add('hidden');
+                depositSection.classList.remove('hidden');
+                progressSection.classList.remove('hidden');
+                updateProgressDisplay();
+            }
+            
+            validateGoalInput();
+            validateDepositInput();
+        }
+
+        // Update progress display
+        function updateProgressDisplay() {
+            const remainingAmount = Math.max(0, savingsGoal - currentSavings);
+            const progressPercentage = savingsGoal > 0 ? Math.min(100, (currentSavings / savingsGoal) * 100) : 0;
+            const isGoalReached = currentSavings >= savingsGoal;
+            
+            totalSavedElement.textContent = formatCurrency(currentSavings);
+            goalAmountElement.textContent = formatCurrency(savingsGoal);
+            remainingAmountElement.textContent = formatCurrency(remainingAmount);
+            progressPercentageElement.textContent = `${progressPercentage.toFixed(1)}%`;
+            
+            if (goalDeadline) {
+                const deadline = new Date(goalDeadline);
+                const today = new Date();
+                const daysLeft = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24));
+                daysLeftElement.textContent = daysLeft > 0 ? daysLeft : 'Overdue';
+            } else {
+                daysLeftElement.textContent = '--';
+            }
+            
+            progressFillElement.style.width = `${progressPercentage}%`;
+            
+            if (isGoalReached) {
+                successMessage.classList.remove('hidden');
+            } else {
+                successMessage.classList.add('hidden');
+            }
+        }
+
+        // Chat functions
+        function addChatMessage(text, type = 'normal') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.innerHTML = `
+                <div class="message-text">${text}</div>
+                <div class="message-time">${new Date().toLocaleTimeString()}</div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function resetChat() {
+            chatMessages.innerHTML = `
+                <div class="message">
+                    <div class="message-text">
+                        <i class="fas fa-hand-wave"></i> Hi! I'm your savings coach. Set a goal and let's build your financial future together!
+                    </div>
+                    <div class="message-time">${new Date().toLocaleTimeString()}</div>
+                </div>
+            `;
+        }
+
+        // Validation functions
+        function isValidAmount(amount) {
+            return !isNaN(amount) && amount > 0 && isFinite(amount);
+        }
+
+        function validateGoalInput() {
+            const goalValue = parseFloat(goalInput.value);
+            const name = goalNameInput.value.trim();
+            setGoalBtn.disabled = !isValidAmount(goalValue) || !name;
+        }
+
+        function validateDepositInput() {
+            const depositValue = parseFloat(depositInput.value);
+            addDepositBtn.disabled = !isValidAmount(depositValue);
+        }
+
+        // Button loading state
+        function showButtonLoading(show) {
+            const btnText = addDepositBtn.querySelector('.btn-text');
+            const loading = addDepositBtn.querySelector('.loading');
+            
+            if (show) {
+                btnText.textContent = 'Adding...';
+                loading.classList.remove('hidden');
+                addDepositBtn.disabled = true;
+            } else {
+                btnText.textContent = 'Add Amount';
+                loading.classList.add('hidden');
+                addDepositBtn.disabled = false;
+            }
+        }
+
+        // Currency formatting
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-RW', {
+                style: 'currency',
+                currency: 'RWF',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Local storage functions
+        function saveDataToStorage() {
+            try {
+                const data = {
+                    savingsGoal,
+                    currentSavings,
+                    goalName,
+                    goalDeadline,
+                    depositCount,
+                    startDate,
+                    lastDepositDate,
+                    weeklyDeposits,
+                    streakCount
+                };
+                localStorage.setItem('smartSavingsData', JSON.stringify(data));
+            } catch (error) {
+                console.warn('Could not save to localStorage:', error);
+            }
+        }
+
+        function loadDataFromStorage() {
+            try {
+                const data = localStorage.getItem('smartSavingsData');
+                if (data) {
+                    const parsed = JSON.parse(data);
+                    savingsGoal = parsed.savingsGoal || 0;
+                    currentSavings = parsed.currentSavings || 0;
+                    goalName = parsed.goalName || '';
+                    goalDeadline = parsed.goalDeadline || null;
+                    depositCount = parsed.depositCount || 0;
+                    startDate = parsed.startDate || null;
+                    lastDepositDate = parsed.lastDepositDate || null;
+                    weeklyDeposits = parsed.weeklyDeposits || [];
+                    streakCount = parsed.streakCount || 0;
+                    
+                    if (savingsGoal > 0) {
+                        addChatMessage(`<i class="fas fa-home"></i> Welcome back! You're working towards "${goalName}" with ${formatCurrency(savingsGoal)}. Keep going! <i class="fas fa-muscle"></i>`, 'normal');
+                        addProgressChart();
+                        updateAutoPlanner();
+                        updateWeeklyReport();
+                        
+                        if (streakCount > 0) {
+                            streakNumber.textContent = streakCount;
+                            streakCounter.classList.remove('hidden');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.warn('Could not load from localStorage:', error);
+            }
+        }
+
+        function clearStorage() {
+            try {
+                localStorage.removeItem('smartSavingsData');
+            } catch (error) {
+                console.warn('Could not clear localStorage:', error);
+            }
+        }
+
+        // Notification functions
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 600;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                background: ${type === 'success' ? '#2d3748' : '#e53e3e'};
+            `;
+            notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i> ${message}`;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        function showError(message) {
+            showNotification(message, 'error');
+        }
+
+        // Add CSS for notifications
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
